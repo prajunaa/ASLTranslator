@@ -40,7 +40,7 @@ document.getElementById("btn-clear-sign").addEventListener("click", async () => 
 });
 
 
-// --- SPEECH-TO-TEXT SECTION (UNCHANGED) ---
+// --- SPEECH-TO-TEXT PANEL (UI helper only; your ML/STT can wire into #speech-output) ---
 const micStatus = document.getElementById("mic-status");
 const btnMic = document.getElementById("btn-mic");
 const btnMicStop = document.getElementById("btn-mic-stop");
@@ -50,10 +50,9 @@ const langSel = document.getElementById("lang");
 let micStream = null;
 let listening = false;
 
-// request mic permission and toggle ui, but do not transcribe
+// request mic permission and toggle ui, but do not transcribe automatically
 btnMic.addEventListener("click", async () => {
   try {
-    // ask for mic access to simulate "using mic"
     micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
     listening = true;
     micStatus.textContent = "mic: on";
@@ -79,7 +78,6 @@ document.getElementById("btn-copy-speech").addEventListener("click", async () =>
   const val = speechOut.value.trim();
   if (val) await navigator.clipboard.writeText(val);
 });
-
 document.getElementById("btn-clear-speech").addEventListener("click", () => {
   speechOut.value = "";
 });
