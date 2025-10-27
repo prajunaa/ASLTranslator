@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- page meta -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ASL Translator</title>
+
+  <!-- connect css -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="wrap">
+    <!-- header -->
+    <header>
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <h1>ASL Translator</h1>
+        </div>
+      </div>
+    </header>
+
+    <!-- sign to text -->
+    <section class="panel">
+      <h2>Sign to Text</h2>
+      <div class="grid">
+        <!-- camera column -->
+        <div class="card">
+          <h3>Camera</h3>
+
+          <!-- Flask video stream -->
+          <img id="stream" src="http://localhost:5000/video_feed" width="100%" alt="Live ASL Feed" />
+          <span class="status" id="cam-status">Camera stream active</span>
+        </div>
+        <!-- sign output column -->
+        <div class="card">
+          <h3>Output</h3>
+          <textarea id="sign-output" placeholder="Detected text will appear here..."></textarea>
+          <div class="row">
+            <button class="secondary" id="btn-copy-sign">Copy</button>
+            <button class="danger" id="btn-clear-sign">Clear</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- speech to text -->
+    <section class="panel">
+      <h2>Speech to Text</h2>
+      <div class="grid">
+        <!-- mic controls -->
+        <div class="card">
+          <h3>Microphone</h3>
+          <div class="row">
+            <button class="primary" id="btn-mic">Start Listening</button>
+            <button class="secondary" id="btn-mic-stop">Stop</button>
+            <span class="status" id="mic-status">mic: off</span>
+          </div>
+          <div class="row">
+            <label for="lang">Language</label>
+            <select id="lang">
+              <option value="en-US">English US</option>
+              <option value="es-ES">Spanish</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- transcript output -->
+        <div class="card">
+          <h3>Transcript</h3>
+          <textarea id="speech-output" placeholder="Speech text will appear here..."></textarea>
+          <div class="row">
+            <button class="secondary" id="btn-copy-speech">Copy</button>
+            <button class="danger" id="btn-clear-speech">Clear</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- connect js -->
+  <script src="script.js"></script>
+
+  <!-- mediapipe cdn -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+</body>
+</html>
