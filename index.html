@@ -1,38 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- meta -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ASL Translator</title>
-
-  <!-- css -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="wrap">
-    <!-- header -->
     <header>
       <div class="brand">
         <div class="logo"></div>
-        <div><h1>ASL Translator</h1></div>
+        <h1>ASL Translator</h1>
       </div>
     </header>
 
-    <!-- sign to text -->
+    <!-- Sign to Text -->
     <section class="panel">
       <h2>Sign to Text</h2>
       <div class="grid">
-        <!-- camera stream -->
         <div class="card">
           <h3>Camera</h3>
           <div class="video-wrap">
             <img id="stream" src="http://localhost:5000/video_feed" alt="Live ASL Feed" />
           </div>
-          <span class="status" id="cam-status">camera stream: on (via Flask)</span>
+          <span class="status" id="cam-status">Camera stream: active</span>
         </div>
 
-        <!-- sign output -->
         <div class="card">
           <h3>Output</h3>
           <textarea id="sign-output" placeholder="Detected text will appear here..."></textarea>
@@ -40,12 +34,11 @@
             <button class="secondary" id="btn-copy-sign">Copy</button>
             <button class="danger" id="btn-clear-sign">Clear</button>
           </div>
-          <div class="status">source: GET /get_words • clear: POST /clear_words</div>
         </div>
       </div>
     </section>
 
-    <!-- speech to text (UI only: mic on/off; no browser STT) -->
+    <!-- Speech to Text (English Only) -->
     <section class="panel">
       <h2>Speech to Text</h2>
       <div class="grid">
@@ -56,18 +49,11 @@
             <button class="secondary" id="btn-mic-stop">Stop</button>
             <span class="status" id="mic-status">mic: off</span>
           </div>
-          <div class="row">
-            <label for="lang">Language</label>
-            <select id="lang">
-              <option value="en-US" selected>English US</option>
-              <option value="es-ES">Spanish</option>
-            </select>
-          </div>
         </div>
 
         <div class="card">
           <h3>Transcript</h3>
-          <textarea id="speech-output" placeholder="(Your backend STT can write here)"></textarea>
+          <textarea id="speech-output" placeholder="Your speech will appear here..."></textarea>
           <div class="row">
             <button class="secondary" id="btn-copy-speech">Copy</button>
             <button class="danger" id="btn-clear-speech">Clear</button>
@@ -77,7 +63,6 @@
     </section>
   </div>
 
-  <!-- js -->
   <script src="script.js"></script>
 </body>
 </html>
