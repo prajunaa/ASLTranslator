@@ -30,9 +30,12 @@
           <h3>Camera</h3>
 
           <!-- Flask video stream -->
-          <img id="stream" src="http://localhost:5000/video_feed" width="100%" alt="Live ASL Feed" />
-          <span class="status" id="cam-status">Camera stream active</span>
+          <div class="video-wrap">
+            <img id="stream" src="http://localhost:5000/video_feed" alt="Live ASL Feed" />
+          </div>
+          <span class="status" id="cam-status">camera stream: on (via Flask)</span>
         </div>
+
         <!-- sign output column -->
         <div class="card">
           <h3>Output</h3>
@@ -41,6 +44,7 @@
             <button class="secondary" id="btn-copy-sign">Copy</button>
             <button class="danger" id="btn-clear-sign">Clear</button>
           </div>
+          <div class="status">source: GET http://localhost:5000/get_words • clear: POST /clear_words</div>
         </div>
       </div>
     </section>
@@ -77,13 +81,33 @@
         </div>
       </div>
     </section>
+
+    <!-- browser STT demo using your recordBtn/resultBox ids -->
+    <section class="panel">
+      <h2>Browser Speech Recognition (Demo)</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Quick Record</h3>
+          <div class="row">
+            <button class="primary" id="recordBtn">Start</button>
+          </div>
+          <div id="resultBox" class="demo-box" aria-live="polite"></div>
+          <div class="status">uses window.SpeechRecognition if available</div>
+        </div>
+        <div class="card">
+          <h3>Tips</h3>
+          <ul class="tips">
+            <li>Desktop Chrome recommended for SpeechRecognition</li>
+            <li>Allow microphone access when prompted</li>
+            <li>Result box shows interim and final text</li>
+          </ul>
+        </div>
+      </div>
+    </section>
   </div>
 
   <!-- connect js -->
   <script src="script.js"></script>
-
-  <!-- mediapipe cdn -->
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
