@@ -1,83 +1,106 @@
-// ======================
-// ASL Translator Frontend
-// ======================
-
-// --- SIGN-TO-TEXT SECTION ---
-// refs outputs
+// ========== SIGN → TEXT (Flask backend) ==========
 const signOut = document.getElementById("sign-output");
 
-// live update from Python backend
 async function updateSignOutput() {
   try {
-    const res = await fetch("http://localhost:5000/get_words");
+    const res = await fetch("http://localhost:5000/get_words", { cache: "no-store" });
+    if (!res.ok) throw new Error(res.status + " " + res.statusText);
     const data = await res.json();
     signOut.value = data.text || "";
   } catch (err) {
-    console.warn("Fetch error:", err);
+    console.warn("GET /get_words failed:", err.message);
   }
 }
-
-// poll every 1 second
 setInterval(updateSignOutput, 1000);
 
-// copy / clear buttons for sign text
+// Copy + Clear for sign text
 document.getElementById("btn-copy-sign").addEventListener("click", async () => {
-  const val = signOut.value.trim();
-  if (val) {
-    await navigator.clipboard.writeText(val);
-    alert("Copied detected text to clipboard!");
-  }
+  const v = signOut.value.trim();
+  if (v) await navigator.clipboard.writeText(v);
 });
-
 document.getElementById("btn-clear-sign").addEventListener("click", async () => {
   signOut.value = "";
-  try {
-    await fetch("http://localhost:5000/clear_words", { method: "POST" });
-    console.log("Backend word_list cleared.");
-  } catch (err) {
-    console.warn("Failed to clear backend word list:", err);
-  }
+  try { await fetch("http://localhost:5000/clear_words", { method: "POST" }); }
+  catch (e) { console.warn("POST /clear_words failed:", e.message); }
 });
 
 
-// --- SPEECH-TO-TEXT PANEL (UI helper only; your ML/STT can wire into #speech-output) ---
+// ========== SPEECH → TEXT (English only) ==========
 const micStatus = document.getElementById("mic-status");
 const btnMic = document.getElementById("btn-mic");
 const btnMicStop = document.getElementById("btn-mic-stop");
 const speechOut = document.getElementById("speech-output");
-const langSel = document.getElementById("lang");
 
-let micStream = null;
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec = null;
 let listening = false;
 
-// request mic permission and toggle ui, but do not transcribe automatically
-btnMic.addEventListener("click", async () => {
-  try {
-    micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    listening = true;
-    micStatus.textContent = "mic: on";
-    console.log("Microphone listening started...");
-  } catch (e) {
-    alert("Microphone error: " + e.message);
-  }
-});
+if (!SpeechRecognition) {
+  micStatus.textContent = "mic: not supported in this browser";
+  btnMic.disabled = true;
+  btnMicStop.disabled = true;
+  console.warn("Web Speech API not available. Use Chrome on desktop.");
+} else {
+  function createRecognizer() {
+    const r = new SpeechRecognition();
+    r.lang = "en-US";      // English only
+    r.continuous = true;
+    r.interimResults = true;
 
-// stop mic
-btnMicStop.addEventListener("click", () => {
-  if (micStream) {
-    micStream.getTracks().forEach((t) => t.stop());
-    micStream = null;
-  }
-  listening = false;
-  micStatus.textContent = "mic: off";
-  console.log("Microphone stopped.");
-});
+    r.onresult = (e) => {
+      const transcript = Array.from(e.results).map(res => res[0]?.transcript || "").join("");
+      speechOut.value = transcript;
+    };
 
-// copy / clear for speech output
+    r.onerror = (e) => {
+      console.error("SpeechRecognition error:", e.error);
+      micStatus.textContent = "mic: error (" + e.error + ")";
+      listening = false;
+      btnMic.disabled = false;
+      btnMicStop.disabled = true;
+    };
+
+    r.onend = () => {
+      listening = false;
+      micStatus.textContent = "mic: off";
+      btnMic.disabled = false;
+      btnMicStop.disabled = true;
+    };
+
+    return r;
+  }
+
+  btnMic.addEventListener("click", () => {
+    if (listening) return;
+    try {
+      rec = createRecognizer();
+      rec.start();
+      listening = true;
+      micStatus.textContent = "mic: on (English)";
+      btnMic.disabled = true;
+      btnMicStop.disabled = false;
+    } catch (e) {
+      console.warn("rec.start() failed:", e);
+    }
+  });
+
+  btnMicStop.addEventListener("click", () => {
+    if (!rec) return;
+    try { rec.stop(); } catch (e) { console.warn("rec.stop() failed:", e); }
+    rec = null;
+  });
+}
+
+// Copy + Clear for speech output
 document.getElementById("btn-copy-speech").addEventListener("click", async () => {
-  const val = speechOut.value.trim();
-  if (val) await navigator.clipboard.writeText(val);
+  const v = speechOut.value.trim();
+  if (v) await navigator.clipboard.writeText(v);
 });
 document.getElementById("btn-clear-speech").addEventListener("click", () => {
   speechOut.value = "";
+  micStatus.textContent = "mic: off";
+  if (rec) { try { rec.stop(); } catch {} rec = null; }
+  btnMic.disabled = false;
+  btnMicStop.disabled = true;
+  listening = false;
 });
