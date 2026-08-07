@@ -9,4 +9,4 @@ Voice Recognition to Text: Abhinav Balaganesh
 
 Submitted to congressional app challenge!
 
-This will be updated soon!
+Never was judged, planning to submit again next year
